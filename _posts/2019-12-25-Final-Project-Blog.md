@@ -1,5 +1,7 @@
----layout: post
-Title: Final Project Daily Log---
+---
+layout: post
+title: Final Project Daily Log
+---
 
 Below is a log of my daily progress, including:
 1.) What I worked on today
