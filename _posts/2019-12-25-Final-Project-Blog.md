@@ -21,6 +21,10 @@ Then I embarked on the Google Colab GPU to do a second version of this model. I 
 3.) Everything went smoothly today and I did not encounter any road blocks
 4.) Goals: start next part of my project. Generating music with other formats (like MIDI). 
 January 10th
+1.) I worked on preprocessing the midi data into matrix formats today. My codes were adapted from [here] (https://github.com/hedonistrh/bestekar/blob/master/LSTM_colab.ipynb). What this person does looks really interesting to me and his way of encoding a midi to matrix is analogous to how piano rolls and music box slits work. Following his methods, I successfully encoded Beethoven's 32 sonatas into matrices.
+2.) I learned what a RELU activation layer is and its advantage over sigmoid activation function in neural networks of many layers since it can avoid the vanishing gradient problem (the derivative of the linear and constant pieces will never change over long time steps). I also learned how to use the python library Music21 to process music information of a midi file, such as extracting note pitches, durations and offsets.
+3.) I still need to understand attention layers which are shown in his code and other parts of that complicated architecture. I will probably use a self-coded simple one in my implementation.
+4.) Goals: Start to train the model tomorrow on Google colab.
 January 13th
 January 15th
 January 16th
