@@ -26,6 +26,10 @@ January 10th
 3.) I still need to understand attention layers which are shown in his code and other parts of that complicated architecture. I will probably use a self-coded simple one in my implementation.
 4.) Goals: Start to train the model tomorrow on Google colab.
 January 13th
+1.) I ran the piano-roll encoded midi model but unfortunately, the model performed nefariously terrible. The accuracy kept going down and the loss kept going up. I think that had a lot to do with the way I encoded the music data. There were too many 0s and since each music piece is in a different key, the matrix configurations were vastly different for the machine to learn. Thus, I gave up this method and decided to try another way of encoding only the information of pitches but not the durations and offsets, using a similar way of encoding language. I first extract all the notes and chords in the original Beethoven sonata midis, and I created a vocubulary consisting of unique notes and chords. The rest was just straightforward language last. Howevever, this time, instead of doing another many-to-many network architecture, I am doing a many-to-one model. Specifically, I use 100 notes to predict the next note. The input sequences were encoded into normalized vectors while the outputs were in one-hot forms.
+2.) I learned how to create a many-to-one sequential model.
+3.) I need to learn how different encoding methods of the same dataset can impact on the quality of model performance.
+4.) Goals: get this part done during the weekend (training and generating music). 
 January 15th
 January 16th
 January 17th
