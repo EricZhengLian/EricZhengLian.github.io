@@ -36,4 +36,8 @@ January 15th
 3.) I am kinda curious to learn why tensorflow disables so many fundamental methods like load_model in its new version.
 4.) Goals: Really get the MIDI generation done and work with Daniel on the audio waveform generation part which is the hardest portion of this project. 
 January 16th
+1.) Daniel and I worked on the final part of the project: using audio waveforms to generate music. We worked on preprocessing music dataset by transforming each wav file to fft and we figured out how to write a new wav file using the inverse fft.
+2.) We learned the usage of fast Fourier transform in audio engineering.
+3.) Road blocks: we couldn't find any fast ways to convert mp3 files to wav. So we needed to obtain a corpus of wav files somewhere.
+4.) Goals: find the datasets of wav files! Start training as soon as we can!
 January 17th
