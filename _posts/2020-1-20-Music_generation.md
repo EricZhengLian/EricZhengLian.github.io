@@ -62,7 +62,7 @@ There are three LSTM layers, and in between are drop out layers which randomly t
 Here is an example we generated after 110 epochs.
 <img src="/images/score2.png" width="600"/>
 
-You can listen to it [here](https://drive.google.com/file/d/1-Cw5jb43h96sdqJoBhnq6xp_PUDLULt2/view?usp=sharing)
+You can listen to it [here](https://drive.google.com/file/d/13gyZSjCRxvHh5I2QrbsHPLlLnBYYNFve/view?usp=sharing)
 
 Well it looks much less neat and crams all the parts (accompaniment, melody) all together. This makes sense because that's how we extracted notes and chords in the first place. And since we did not keep any information regarding the durations and offsets in our preprocessing, all notes were set to eighth notes. Frankly speaking, it sounds not bad and much more "original" though mechanical and metronomical. You can hardly trace any Beethoven's phrases here. Although, musicologically, there were many counterpoint errors and wrong chords. I was fascinated by many repeated spots in the music. It almost sounded like our model went to an infinite loop but magically it could find its way out. For me, the style of this piece is more akin to the contemporary minimalism music than Beethoven's sonata. Perhaps the underlying nature of Beethoven is actually Philip Glass? (It's kinda sacrilegious to say that as a classical pianist). 
 
