@@ -33,12 +33,38 @@ This is the most wonderful part! I wrote a function to generate text of any leng
 **I was very much amazed by how fast this could run! (4s/epoch)**
 
 As you can see, the model seemed to learn the format of abc notation (such as time signature, key, and measure lines) by itself pretty amazingly. <img src="/images/output1.png" width="600"/>. Here is one example of generated txt: <img src="/images/txt.png" width="600"/> We could convert this txt to midi just by copying and pasting it to [this website](https://colinhume.com/music.aspx). And it looks like this in standard music notation: <img src="/images/score1.png" width="600"/>. You can also [listen to it](https://drive.google.com/file/d/1YmNHgIhKxvUzK0c9w7vjOuFZ6ZZLa4kv/view?usp=sharing)!
-Harmonically, it follows the tonal structures very well. There were even very few wrong chords. The melody sounds pleasantly simple. And I believe it's very hard for non-musicians to differentiate it from human-composed music. One picky comment I would make is that the measure line seems to be placed one beat off. But who cares? However, I am a little worried that it might be too good that it was overfitted. I hope in the future when doing similar tasks, I can find a way to evaluate the similarity level between the result and the original dataset. It's still very cool even if it just reproduces a song or several segments of different songs in the original dataset. This potential problem of overfitting made me decide to use dropout layers in the next part to automatically turn off some cells so that not everything would be learned.
+Harmonically, it follows the tonal structures very well. There were even very few wrong chords. The melody sounds pleasantly simple. And I believe it's very hard for non-musicians to differentiate it from human-composed music since it has a melodic theme that is recurrent! One picky comment I would make is that the measure line seems to be placed one beat off. But who cares? However, I am a little worried that it might be too good that it was overfitted. I hope in the future when doing similar tasks, I can find a way to evaluate the similarity level between the result and the original dataset. It's still very cool even if it just reproduces a song or several segments of different songs in the original dataset. This potential problem of overfitting made me decide to use dropout layers in the next part to automatically turn off some cells so that not everything would be learned.
 
 
 # Part 2: MIDI-based music generation
 
+In this part, we directly used [MIDI](https://en.wikipedia.org/wiki/MIDI) format data to generate music! We acquired our dataset from the [kunstderfuge MIDI database](http://www.kunstderfuge.com/) and downloaded the midi files of the 32 piano sonatas of the greatest **Ludwig van Beethoven**. They are the New Testament for pianists!
+<img src="/images/code4.png" width="600"/>
 
+## Preprocess
+
+We extracted only the pitch information (not durations or offsets) of the music and we represented all data in an array of midi pitch values. For chords, we just bundled all the different pitches together joined by a period. The rest was all same as what we did in Part 1 such as creating mappings with integers. But what's different this time was that we  used a many-to-one instead of a many-to-many model. We were only predicting the 101th note given the first 100 notes of a melody. So we only one-hot encoded the target set and directly fed the normalized input set to training.
+<img src="/images/code5.png" width="600"/>
+
+## Training and generating midi
+
+The training process this time was much more painstaking since there was much more computational load and the runtime in Google colab shut down for different reasons. I learned that it's always important to create a callbacks calling in the model.fit part since it allows you to save the weights of the current model as you train it. We can always resume the training process instead of starting over when we have this. So once again, very important: 
+**Callbacks, callbacks, callbacks!!!**
+
+The architecture is as follows:
+
+<img src="/images/model2.png" width="600"/>
+
+There are three LSTM layers, and in between are drop out layers which randomly turned off 30% of cells to avoid overfitting. The sequence was not specified in the model this time cause we wanted to generate a melody note by note using all the notes already generated. A new piece of music was generated every 10 epochs. 
+
+<img src="/images/code6.png" width="600"/>
+
+Here is an example we generated after 110 epochs.
+<img src="/images/score2.png" width="600"/>
+
+You can listen to it [here](https://drive.google.com/file/d/1-Cw5jb43h96sdqJoBhnq6xp_PUDLULt2/view?usp=sharing)
+
+Well it looks much less neat and crams all the parts (accompaniment, melody) all together. This makes sense because that's how we extracted notes and chords in the first place. And since we did not keep any information regarding the durations and offsets in our preprocessing, all notes were set to eighth notes. Frankly speaking, it sounds not bad and much more "original" though mechanical and metronomical. You can hardly trace any Beethoven's phrases here. Although, musicologically, there were many counterpoint errors and wrong chords. I was fascinated by many repeated spots in the music. It almost sounded like our model went to an infinite loop but magically it could find its way out. For me, the style of this piece is more akin to the contemporary minimalism music than Beethoven's sonata. Perhaps the underlying nature of Beethoven is actually Philip Glass? (It's kinda sacrilegious to say that as a classical pianist). 
 
 
 
