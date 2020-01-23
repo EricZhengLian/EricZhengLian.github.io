@@ -77,10 +77,9 @@ The last part is our most challenging and least successful attempt to generate m
 
 Before we got our hands on actual music wav files, we first learnt about the application of wav signal processing in languages. Instead of directly tracing the patterns in the time domain waveforms (a sound wave graphed in intensity/loudness v.s. time coordinates), most research utilized Fast Fourier Transform (FFT) to preprocess the signal to extract major frequencies in the beginning. The greatest usefulness of FFT is its ability to extract major frequencies out of a complex waveforms. It is kind of analogous to the ability of separating different colors from a muddy pond of miscellaneous pigments. It considerably reduces the variability in the wav files and retains the most important information in the signals. And the FFT in python is actually coded using the formula of *discrete* Fourier transform (the equation of the wave are too complex or unknown, it is very hard to compute a complex integral from negative to positive infinity using the wave equation), meaning that we approximate the Fourier transform of the original wave using a finite number of points on the wave sampled. FFT signals (magnitude vs frequency) can be turned back to waves in time domain using inverse FFT (IFFT). The equations of discrete FFT and IFFT are below:
 
-$$X_{k} = \sum_{n=0}^{N-1}x_{n} \cdot e^{-\frac{i2\pi}{N}kn} \newline
-= \sum_{n=0}^{N-1}x_{n} \cdot \left [ \cos(\frac{2\pi}{N}kn) -i\cdot \sin(\frac{2\pi}{N}kn)\right ]$$
+<img src="/images/eq1.gif" width="600"/>
 
-$$x_{n} = \frac{1}{N}\sum_{k=0}^{N-1}X_{k} \cdot e^{\frac{i2\pi kn}{N}}$$
+<img src="/images/eq2.gif" width="600"/>
 
 Note the Euler's formula part in the FFT equation, which hinted at the concept of rotation in a complex plane. In fact, 3blue1brown has a [video](https://www.youtube.com/watch?v=mkGsMWi_j4Q&list=PLT5_DQAJJLh-ogHjHcLtFYMQy7SkZ7-3i&index=11) demonstrating a visualization of FFT as waves "winding up" at a particular rate around the circle and the center of mass of the graph traces a factored form of FFT graph. It is really fascinating! However, this is not a calculus blog post and our understandings haven't reached the depth to explain the mathematical nature of FFT yet, we are just going to use it anyway.
 
