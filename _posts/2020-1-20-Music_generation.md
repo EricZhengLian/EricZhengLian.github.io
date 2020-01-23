@@ -69,22 +69,49 @@ Well it looks much less neat and crams all the parts (accompaniment, melody) all
 
 You can find our code for part 2 [here](https://github.com/danielfang001/part2_music.git)
 
+# Part 3 : WAV-based music generations
+
+The last part is our most challenging and least successful attempt to generate music from audio wav files. This method is completely musicological illiterate compared with the previous two, which to some degrees, both contain musical knowledges such as chord and pitch names. Wav files are waveform representations of sounds, which are the most fundamental and natural type of representation. In theory, under the most idealistic condition, if a neural network is able to fully "learn" the waveforms and produce a new wav file containing features of the trained wave forms, a new piece of "music" can be created. Different from the previous two methods which can only learn information about pitches, durations and offsets, the waveform-based music generation method is possible to also learn the timbre and loudness of sounds, the so-called "expressive" elements in music. But the actual implementation is far more intricate than the rationale. It is actually "devilishly hard". 
+
 ## Preprocess
 
-First, we processed the midi files into wav audio files as samples of a waveform in time domain. However, we realized that it is more meaningful to transform the data into frequency domain, as the neural network will produce more reasonable and similar result using the samples. After importing the wav file data, we convert the audios into frequency domain using FFT (Fast Fourier Transform). The transformation takes in an audio time series array and exports a complex with the elements:
+Before we got our hands on actual music wav files, we first learnt about the application of wav signal processing in languages. Instead of directly tracing the patterns in the time domain waveforms (a sound wave graphed in intensity/loudness v.s. time coordinates), most research utilized Fast Fourier Transform (FFT) to preprocess the signal to extract major frequencies in the beginning. The greatest usefulness of FFT is its ability to extract major frequencies out of a complex waveforms. It is kind of analogous to the ability of separating different colors from a muddy pond of miscellaneous pigments. It considerably reduces the variability in the wav files and retains the most important information in the signals. And the FFT in python is actually coded using the formula of *discrete* Fourier transform (the equation of the wave are too complex or unknown, it is very hard to compute a complex integral from negative to positive infinity using the wave equation), meaning that we approximate the Fourier transform of the original wave using a finite number of points on the wave sampled. FFT signals (magnitude vs frequency) can be turned back to waves in time domain using inverse FFT (IFFT). The equations of discrete FFT and IFFT are below:
 
-[y(0),y(1),..,y(n/2),y(1-n/2),...,y(-1)]        if n is even
+$$X_{k} = \sum_{n=0}^{N-1}x_{n} \cdot e^{-\frac{i2\pi}{N}kn} \newline
+= \sum_{n=0}^{N-1}x_{n} \cdot \left [ \cos(\frac{2\pi}{N}kn) -i\cdot \sin(\frac{2\pi}{N}kn)\right ]$$
 
-[y(0),y(1),..,y((n-1)/2),y(-(n-1)/2),...,y(-1)]  if n is odd
+$$x_{n} = \frac{1}{N}\sum_{k=0}^{N-1}X_{k} \cdot e^{\frac{i2\pi kn}{N}}$$
 
-where:
-
-y(j) = sum[k=0..n-1] x[k] * exp(-sqrt(-1)*j*k* 2*pi/n), j = 0..n-1
-
-In order to visualize this transformation, I attach an image in the following. The basic idea of Fourier transformation is to wind the original time based wave audio around a x-y coordinate and trace the center of the mass of the graph. The calculation leads to a new wave in frequency domain which decompose the original complex audio wave.
+Note the Euler's formula part in the FFT equation, which hinted at the concept of rotation in a complex plane. In fact, 3blue1brown has a [video](https://www.youtube.com/watch?v=mkGsMWi_j4Q&list=PLT5_DQAJJLh-ogHjHcLtFYMQy7SkZ7-3i&index=11) demonstrating a visualization of FFT as waves "winding up" at a particular rate around the circle and the center of mass of the graph traces a factored form of FFT graph. It is really fascinating! However, this is not a calculus blog post and our understandings haven't reached the depth to explain the mathematical nature of FFT yet, we are just going to use it anyway.
 
 <img src="/images/unnamed.png" width="600"/>
 
+We tried a speech wav file of a 5s English phrase to on the FFT and IFFT methods in python, and were successfully reproducing a new wav file sounding very close to the original one (though a little bit distorted) with recognizable speech content. So we "FFTed" the wav files of 10 different music of Saint-Saens in similar manners. `
+
+**But this is where we messed up:**
+
+The fft vectors were so **absurdly** large that when we tried to create a vocab list of unique frequency values among the 10 different songs the nearly 30GB RAM of google Colab always crushed, for over 10 times. Then we alleviated the burden by using a single song only. But still the RAM crushed. The data size and the vocal size were nearly identical, meaning that almost all frequencies are themselves unique. It is like writing a long essay but each character in it is a different one. So it's enormously diverse and wild for a neural network to learn. The only way to keep it alive was to NOT one-hot encode the targets (which is technically not okay since the correspondence between encoded value and index in the matrix is lost). So the whole started to make no sense from here...
+
+## Training (messing around) and reflection
+
+Anyway we still wanted to make something audible from here!! We basically just made some adjustments in the dimensions and applied the MIDI LSTM model to the data. The loss skyrocketed to over 30 million and there was literally no accuracy (in the order of magnitude of 10^(-19)). And yes, we did write an audio file from the output after just 1 epoch. It is absolute noise and we feel deeply sorry for Camille Saint-Saëns...
+
+But it's really worth thinking that there is so much frequency complexity just within a single short piece of music that it is too large to be processed in the same manner as we process the whole volumes of Shakespeare's texts and even the whole set of Beethoven's 32 sonatas (24h full length if you were to play the whole set on the piano). The extra, nuanced details wave files captured are obtained at the expense of exponentially increasing the internal entropies of the inner contents. And that's probably why existing studies mostly used wav files to generate sounds of new timbres but seldom attempted to generate music with raw wav files. 
+
+This last part was definitely beyond our capabilities. We were overconfident and too idealistic and our final outcome was a joke... (WARNING: don't listen to the noise file, it can be detrimental to your hearing and the acoustics of the computer's amp) But we were satisfied to have learned a little bit about signal processing and its application with python packages in a short period of time. 
+
 You can find our code for part 3 [here](https://github.com/danielfang001/part3_music.git)
+
+# A few words to say in the end (Eric)
+
+*This is totally non-technical.*
+
+Growing up as a musician, I never seriously pondered over the nature of music. As this project has demonstrated, music is simply a sequence of discrete events occurring in time. But can we REALLY understand music by finding the curves of best-fit of high dimensional distributions? What's the "hidden state" behind Beethoven's genius? Are AI-composed musical pieces the miraculous creations of technology or ridiculous imitations of human works? How does the machine know what note is the right one to play? How do we know what note is the right one to play?
+
+I feel very fortunate to be a musician and be able to detect and identify different pitches coming from different instruments when listening to a symphony. Just think about it, every second, my brain is doing Fast Fourier Transforms over these complex signals by itself! 
+
+
+
+
 
 
