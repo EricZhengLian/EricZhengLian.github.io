@@ -35,6 +35,7 @@ This is the most wonderful part! I wrote a function to generate text of any leng
 As you can see, the model seemed to learn the format of abc notation (such as time signature, key, and measure lines) by itself pretty amazingly. <img src="/images/output1.png" width="600"/>. Here is one example of generated txt: <img src="/images/txt.png" width="600"/> We could convert this txt to midi just by copying and pasting it to [this website](https://colinhume.com/music.aspx). And it looks like this in standard music notation: <img src="/images/score1.png" width="600"/>. You can also [listen to it](https://drive.google.com/file/d/1YmNHgIhKxvUzK0c9w7vjOuFZ6ZZLa4kv/view?usp=sharing)!
 Harmonically, it follows the tonal structures very well. There were even very few wrong chords. The melody sounds pleasantly simple. And I believe it's very hard for non-musicians to differentiate it from human-composed music since it has a melodic theme that is recurrent! One picky comment I would make is that the measure line seems to be placed one beat off. But who cares? However, I am a little worried that it might be too good that it was overfitted. I hope in the future when doing similar tasks, I can find a way to evaluate the similarity level between the result and the original dataset. It's still very cool even if it just reproduces a song or several segments of different songs in the original dataset. This potential problem of overfitting made me decide to use dropout layers in the next part to automatically turn off some cells so that not everything would be learned.
 
+You can find our code for part 1 [here](https://github.com/danielfang001/part1_music.git)
 
 # Part 2: MIDI-based music generation
 
@@ -66,5 +67,24 @@ You can listen to it [here](https://drive.google.com/file/d/13gyZSjCRxvHh5I2Qrbs
 
 Well it looks much less neat and crams all the parts (accompaniment, melody) all together. This makes sense because that's how we extracted notes and chords in the first place. And since we did not keep any information regarding the durations and offsets in our preprocessing, all notes were set to eighth notes. Frankly speaking, it sounds not bad and much more "original" though mechanical and metronomical. You can hardly trace any Beethoven's phrases here. Although, musicologically, there were many counterpoint errors and wrong chords. I was fascinated by many repeated spots in the music. It almost sounded like our model went to an infinite loop but magically it could find its way out. For me, the style of this piece is more akin to the contemporary minimalism music than Beethoven's sonata. Perhaps the underlying nature of Beethoven is actually Philip Glass? (It's kinda sacrilegious to say that as a classical pianist). 
 
+You can find our code for part 2 [here](https://github.com/danielfang001/part2_music.git)
+
+## Preprocess
+
+First, we processed the midi files into wav audio files as samples of a waveform in time domain. However, we realized that it is more meaningful to transform the data into frequency domain, as the neural network will produce more reasonable and similar result using the samples. After importing the wav file data, we convert the audios into frequency domain using FFT (Fast Fourier Transform). The transformation takes in an audio time series array and exports a complex with the elements:
+
+[y(0),y(1),..,y(n/2),y(1-n/2),...,y(-1)]        if n is even
+
+[y(0),y(1),..,y((n-1)/2),y(-(n-1)/2),...,y(-1)]  if n is odd
+
+where:
+
+y(j) = sum[k=0..n-1] x[k] * exp(-sqrt(-1)*j*k* 2*pi/n), j = 0..n-1
+
+In order to visualize this transformation, I attach an image in the following. The basic idea of Fourier transformation is to wind the original time based wave audio around a x-y coordinate and trace the center of the mass of the graph. The calculation leads to a new wave in frequency domain which decompose the original complex audio wave.
+
+<img src="/images/unnamed.png" width="600"/>
+
+You can find our code for part 3 [here](https://github.com/danielfang001/part3_music.git)
 
 
